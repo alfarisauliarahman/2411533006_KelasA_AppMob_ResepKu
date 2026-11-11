@@ -25,10 +25,13 @@ class ResepKuApp extends StatelessWidget {
     return MaterialApp(
       title: 'ResepKu',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(colorSchemeSeed: Colors.deepOrange),
+      theme: ThemeData(colorSchemeSeed: Colors.deepOrange,
+      fontFamily: 'Poppins', // didaftarkan di pubspec.yaml
+      ),
       darkTheme: ThemeData(
         colorSchemeSeed: Colors.deepOrange,
         brightness: Brightness.dark,
+        fontFamily: 'Poppins',
       ),
       themeMode: context.watch<ThemeProvider>().themeMode,
       builder: (context, child) => IdentityFooter(child: child!), // tetap dipertahankan
