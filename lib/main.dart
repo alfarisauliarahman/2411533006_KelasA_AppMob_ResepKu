@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:resepku/data/favorite_database.dart';
 import 'package:provider/provider.dart';
 import 'package:resepku/pages/home_page.dart';
 import 'package:resepku/providers/favorite_provider.dart';
-import 'package:resepku/providers/theme_provider.dart';
+import 'package:resepku/providers/settings_provider.dart';
 import 'package:resepku/services/recipe_service.dart';
 import 'package:resepku/widgets/identity_footer.dart';
 
-void main() {
+Future<void> main() async {
+  // Wajib sebelum memakai plugin di dalam main
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final settings = SettingsProvider();
+  final favorites = FavoriteProvider(FavoriteDatabase());
+  await Future.wait([settings.load(), favorites.load()]);
+
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => FavoriteProvider()),
-        ChangeNotifierProvider(
-          create: (context) => ThemeProvider(),
-        ), // Latihan 1 Modul 6
+        ChangeNotifierProvider.value(value: settings),
+        ChangeNotifierProvider.value(value: favorites),
         // Provider biasa: RecipeService tidak berubah, jadi tidak perlu notifyListeners
         Provider(
           create: (context) => RecipeService(),
@@ -42,7 +48,7 @@ class ResepKuApp extends StatelessWidget {
         brightness: Brightness.dark,
         fontFamily: 'Poppins',
       ),
-      themeMode: context.watch<ThemeProvider>().themeMode, // Latihan 1 Modul 6
+      themeMode: context.watch<SettingsProvider>().themeMode,
       builder: (context, child) =>
           IdentityFooter(child: child!), // footer NIM & nama
       home: const HomePage(),

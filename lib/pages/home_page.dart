@@ -1,3 +1,4 @@
+import 'package:resepku/providers/settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:resepku/models/recipe.dart';
@@ -18,7 +19,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  bool _isGrid = false;
   String? _cuisine;
   late Future<List<Recipe>> _recipesFuture;
 
@@ -64,13 +64,17 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final settings = context.watch<SettingsProvider>();
+    final isGrid = settings.isGrid;
     return Scaffold(
       appBar: AppBar(
         title: Row(
           children: [
             Image.asset('assets/images/logo.png', height: 32),
             const SizedBox(width: 8),
-            const Text('ResepKu'),
+            const Flexible(
+              child: Text('ResepKu', overflow: TextOverflow.ellipsis),
+            ),
           ],
         ),
         actions: [
@@ -83,9 +87,9 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           IconButton(
-            tooltip: _isGrid ? 'Tampilan list' : 'Tampilan grid',
-            icon: Icon(_isGrid ? Icons.view_list : Icons.grid_view),
-            onPressed: () => setState(() => _isGrid = !_isGrid),
+            tooltip: isGrid ? 'Tampilan list' : 'Tampilan grid',
+            icon: Icon(isGrid ? Icons.view_list : Icons.grid_view),
+            onPressed: () => settings.setGrid(!isGrid),
           ),
           const FavoriteBadgeButton(),
           IconButton(
@@ -163,7 +167,7 @@ class _HomePageState extends State<HomePage> {
               Expanded(
                 child: RefreshIndicator(
                   onRefresh: _refresh,
-                  child: _isGrid
+                  child: isGrid
                       ? _buildGrid(filteredRecipes)
                       : _buildList(filteredRecipes),
                 ),
